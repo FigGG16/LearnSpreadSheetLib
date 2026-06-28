@@ -8,58 +8,58 @@
 
 import UIKit
 
-/// Implement this protocol to provide data to an `SpreadsheetView`.
+/// 实现该协议，为 `SpreadsheetView` 提供数据。
 public protocol SpreadsheetViewDataSource: class {
-    /// Asks your data source object for the number of columns in the spreadsheet view.
+    /// 向数据源询问表格视图的列数。
     ///
-    /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
-    /// - Returns: The number of columns in `spreadsheetView`.
+    /// - Parameter spreadsheetView: 请求该信息的表格视图。
+    /// - Returns: `spreadsheetView` 中的列数。
     func numberOfColumns(in spreadsheetView: SpreadsheetView) -> Int
-    /// Asks the number of rows in spreadsheet view.
+    /// 向数据源询问表格视图的行数。
     ///
-    /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
-    /// - Returns: The number of rows in `spreadsheetView`.
+    /// - Parameter spreadsheetView: 请求该信息的表格视图。
+    /// - Returns: `spreadsheetView` 中的行数。
     func numberOfRows(in spreadsheetView: SpreadsheetView) -> Int
 
-    /// Asks the data source for the width to use for a row in a specified location.
+    /// 向数据源询问指定列应使用的宽度。
     ///
     /// - Parameters:
-    ///   - spreadsheetView: The spreadsheet view requesting this information.
-    ///   - column: The index of the column.
-    /// - Returns: A nonnegative floating-point value that specifies the width (in points) that column should be.
+    ///   - spreadsheetView: 请求该信息的表格视图。
+    ///   - column: 列索引。
+    /// - Returns: 指定该列宽度（单位为点）的非负浮点值。
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, widthForColumn column: Int) -> CGFloat
-    /// Asks the data source for the height to use for a row in a specified location.
+    /// 向数据源询问指定行应使用的高度。
     ///
     /// - Parameters:
-    ///   - spreadsheetView: The spreadsheet view requesting this information.
-    ///   - row: The index of the row.
-    /// - Returns: A nonnegative floating-point value that specifies the height (in points) that row should be.
+    ///   - spreadsheetView: 请求该信息的表格视图。
+    ///   - row: 行索引。
+    /// - Returns: 指定该行高度（单位为点）的非负浮点值。
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, heightForRow row: Int) -> CGFloat
 
-    /// Asks your data source object for the view that corresponds to the specified cell in the spreadsheetView.
-    /// The cell that is returned must be retrieved from a call to `dequeueReusableCell(withReuseIdentifier:for:)`
+    /// 向数据源请求表格视图中指定位置对应的单元格。
+    /// 返回的单元格必须通过 `dequeueReusableCell(withReuseIdentifier:for:)` 获取。
     ///
     /// - Parameters:
-    ///   - spreadsheetView: The spreadsheet view requesting this information.
-    ///   - indexPath: The location of the cell
-    /// - Returns: A cell object to be displayed at the location.
-    ///   If you return nil from this method, the blank cell will be displayed by default.
+    ///   - spreadsheetView: 请求该信息的表格视图。
+    ///   - indexPath: 单元格的位置。
+    /// - Returns: 要在该位置显示的单元格对象。
+    ///   如果该方法返回 `nil`，默认显示空白单元格。
     func spreadsheetView(_ spreadsheetView: SpreadsheetView, cellForItemAt indexPath: IndexPath) -> Cell?
 
-    /// Asks your data source object for the array of cell ranges that indicate the range of merged cells in the spreadsheetView.
+    /// 向数据源请求表格视图中的合并单元格范围数组。
     ///
-    /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
-    /// - Returns: An array of the cell ranges indicating the range of merged cells.
+    /// - Parameter spreadsheetView: 请求该信息的表格视图。
+    /// - Returns: 表示各个合并单元格范围的数组。
     func mergedCells(in spreadsheetView: SpreadsheetView) -> [CellRange]
-    /// Asks your data source object for the number of columns to be frozen as a fixed column header in the spreadsheetView.
+    /// 向数据源询问表格视图中需要冻结为固定列表头的列数。
     ///
-    /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
-    /// - Returns: The number of columns to be frozen
+    /// - Parameter spreadsheetView: 请求该信息的表格视图。
+    /// - Returns: 要冻结的列数。
     func frozenColumns(in spreadsheetView: SpreadsheetView) -> Int
-    /// Asks your data source object for the number of rows to be frozen as a fixed row header in the spreadsheetView.
+    /// 向数据源询问表格视图中需要冻结为固定行表头的行数。
     ///
-    /// - Parameter spreadsheetView: The spreadsheet view requesting this information.
-    /// - Returns: The number of rows to be frozen
+    /// - Parameter spreadsheetView: 请求该信息的表格视图。
+    /// - Returns: 要冻结的行数。
     func frozenRows(in spreadsheetView: SpreadsheetView) -> Int
 }
 

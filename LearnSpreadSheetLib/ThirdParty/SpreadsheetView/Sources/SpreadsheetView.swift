@@ -9,34 +9,34 @@
 import UIKit
 
 public class SpreadsheetView: UIView {
-    /// The object that provides the data for the collection view.
+    /// 为表格视图提供数据的对象。
     ///
-    /// - Note: The data source must adopt the `SpreadsheetViewDataSource` protocol.
-    ///   The spreadsheet view maintains a weak reference to the data source object.
+    /// - Note: 数据源必须遵循 `SpreadsheetViewDataSource` 协议。
+    ///   表格视图仅持有数据源对象的弱引用。
     public weak var dataSource: SpreadsheetViewDataSource? {
         didSet {
             resetTouchHandlers(to: [tableView, columnHeaderView, rowHeaderView, cornerView])
             setNeedsReload()
         }
     }
-    /// The object that acts as the delegate of the spreadsheet view.
-    /// - Note: The delegate must adopt the `SpreadsheetViewDelegate` protocol.
-    ///   The spreadsheet view maintains a weak reference to the delegate object.
+    /// 作为表格视图代理的对象。
+    /// - Note: 代理必须遵循 `SpreadsheetViewDelegate` 协议。
+    ///   表格视图仅持有代理对象的弱引用。
     ///
-    ///   The delegate object is responsible for managing selection behavior and interactions with individual items.
+    ///   代理对象负责管理选择行为以及与各个单元格的交互。
     public weak var delegate: SpreadsheetViewDelegate?
 
-    /// The horizontal and vertical spacing between cells.
+    /// 单元格之间的水平和垂直间距。
     /// 
-    /// - Note: The default spacing is `(1.0, 1.0)`. Negative values are not supported.
+    /// - Note: 默认间距为 `(1.0, 1.0)`，不支持负值。
     public var intercellSpacing = CGSize(width: 1, height: 1)
     public var gridStyle: GridStyle = .solid(width: 1, color: .lightGray)
 
-    /// A Boolean value that indicates whether users can select cells in the spreadsheet view.
+    /// 指示用户能否选中表格单元格的布尔值。
     ///
-    /// - Note: If the value of this property is `true` (the default), users can select cells.
-    ///   If you want more fine-grained control over the selection of cells,
-    ///   you must provide a delegate object and implement the appropriate methods of the `SpreadsheetViewDelegate` protocol.
+    /// - Note: 该属性为 `true`（默认值）时，用户可以选中单元格。
+    ///   如果需要更精细地控制单元格选择行为，
+    ///   必须提供代理对象，并实现 `SpreadsheetViewDelegate` 协议中的相应方法。
     ///
     /// - SeeAlso: `allowsMultipleSelection`
     public var allowsSelection = true {
@@ -46,13 +46,12 @@ public class SpreadsheetView: UIView {
             }
         }
     }
-    /// A Boolean value that determines whether users can select more than one cell in the spreadsheet view.
+    /// 决定用户能否在表格中同时选中多个单元格的布尔值。
     ///
-    /// - Note: This property controls whether multiple cells can be selected simultaneously.
-    ///   The default value of this property is `false`.
+    /// - Note: 该属性控制是否可以同时选中多个单元格，默认值为 `false`。
     ///
-    ///   When the value of this property is true, tapping a cell adds it to the current selection (assuming the delegate permits the cell to be selected).
-    ///   Tapping the cell again removes it from the selection.
+    ///   该属性为 `true` 时，点击单元格会将其加入当前选择集合（前提是代理允许选中该单元格）。
+    ///   再次点击同一单元格会将其移出选择集合。
     ///
     /// - SeeAlso: `allowsSelection`
     public var allowsMultipleSelection = false {
@@ -63,35 +62,35 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A Boolean value that controls whether the vertical scroll indicator is visible.
+    /// 控制是否显示垂直滚动指示器的布尔值。
     ///
-    /// The default value is `true`. The indicator is visible while tracking is underway and fades out after tracking.
+    /// 默认值为 `true`。拖动期间指示器可见，拖动结束后会逐渐淡出。
     public var showsVerticalScrollIndicator = true {
         didSet {
             overlayView.showsVerticalScrollIndicator = showsVerticalScrollIndicator
         }
     }
-    /// A Boolean value that controls whether the horizontal scroll indicator is visible.
+    /// 控制是否显示水平滚动指示器的布尔值。
     ///
-    /// The default value is `true`. The indicator is visible while tracking is underway and fades out after tracking.
+    /// 默认值为 `true`。拖动期间指示器可见，拖动结束后会逐渐淡出。
     public var showsHorizontalScrollIndicator = true {
         didSet {
             overlayView.showsHorizontalScrollIndicator = showsHorizontalScrollIndicator
         }
     }
 
-    /// A Boolean value that controls whether the scroll-to-top gesture is enabled.
+    /// 控制是否启用“滚动到顶部”手势的布尔值。
     ///
-    /// - Note: The scroll-to-top gesture is a tap on the status bar. When a user makes this gesture,
-    /// the system asks the scroll view closest to the status bar to scroll to the top.
-    /// If that scroll view has `scrollsToTop` set to `false`, its delegate returns false from `scrollViewShouldScrollToTop(_:)`, 
-    /// or the content is already at the top, nothing happens.
+    /// - Note: “滚动到顶部”手势是点击状态栏。用户执行该手势时，
+    /// 系统会请求距离状态栏最近的滚动视图滚动到顶部。
+    /// 如果该滚动视图的 `scrollsToTop` 为 `false`、代理从 `scrollViewShouldScrollToTop(_:)` 返回 `false`，
+    /// 或内容已经位于顶部，则不会发生任何操作。
     ///
-    /// After the scroll view scrolls to the top of the content view, it sends the delegate a `scrollViewDidScrollToTop(_:)` message.
+    /// 滚动视图到达内容顶部后，会向代理发送 `scrollViewDidScrollToTop(_:)` 消息。
     ///
-    /// The default value of scrollsToTop is `true`.
+    /// `scrollsToTop` 的默认值为 `true`。
     ///
-    /// On iPhone, the scroll-to-top gesture has no effect if there is more than one scroll view on-screen that has `scrollsToTop` set to `true`.
+    /// 在 iPhone 上，如果屏幕中有多个滚动视图的 `scrollsToTop` 都为 `true`，该手势不会生效。
     public var scrollsToTop: Bool = true {
         didSet {
             tableView.scrollsToTop = scrollsToTop
@@ -114,12 +113,12 @@ public class SpreadsheetView: UIView {
     var circularScrollScalingFactor: (horizontal: Int, vertical: Int) = (1, 1)
     var centerOffset = CGPoint.zero
 
-    /// The view that provides the background appearance.
+    /// 提供背景外观的视图。
     ///
-    /// - Note: The view (if any) in this property is positioned underneath all of the other content and sized automatically to fill the entire bounds of the spreadsheet view.
-    /// The background view does not scroll with the spreadsheet view’s other content. The spreadsheet view maintains a strong reference to the background view object.
+    /// - Note: 该属性中的视图（如果存在）位于所有其他内容下方，并自动调整大小以填满表格视图的整个边界。
+    /// 背景视图不会随表格的其他内容滚动。表格视图会强引用该背景视图对象。
     ///
-    /// This property is nil by default, which displays the background color of the spreadsheet view.
+    /// 该属性默认为 `nil`，此时显示表格视图自身的背景色。
     public var backgroundView: UIView? {
         willSet {
             backgroundView?.removeFromSuperview()
@@ -144,11 +143,11 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// Returns an array of visible cells currently displayed by the spreadsheet view.
+    /// 返回表格视图当前显示的所有可见单元格。
     ///
-    /// - Note: This method returns the complete list of visible cells displayed by the collection view.
+    /// - Note: 该属性返回当前显示的完整可见单元格列表。
     ///
-    /// - Returns: An array of `Cell` objects. If no cells are visible, this method returns an empty array.
+    /// - Returns: `Cell` 对象数组。没有可见单元格时返回空数组。
     public var visibleCells: [Cell] {
         let cells: [Cell] = Array(columnHeaderView.visibleCells) + Array(rowHeaderView.visibleCells)
             + Array(cornerView.visibleCells) + Array(tableView.visibleCells)
@@ -156,9 +155,9 @@ public class SpreadsheetView: UIView {
     }
 
 
-    /// An array of the visible items in the collection view.
-    /// - Note: The value of this property is a sorted array of IndexPath objects, each of which corresponds to a visible cell in the spreadsheet view.
-    /// If there are no visible items, the value of this property is an empty array.
+    /// 表格视图中可见项的索引路径数组。
+    /// - Note: 该属性是已排序的 `IndexPath` 数组，每个索引路径对应一个可见单元格。
+    /// 没有可见项时，该属性为空数组。
     ///
     /// - SeeAlso: `visibleCells`
     public var indexPathsForVisibleItems: [IndexPath] {
@@ -169,29 +168,29 @@ public class SpreadsheetView: UIView {
         return Array(selectedIndexPaths).sorted().first
     }
 
-    /// The index paths for the selected items.
-    /// - Note: The value of this property is an array of IndexPath objects, each of which corresponds to a single selected item.
-    /// If there are no selected items, the value of this property is nil.
+    /// 已选中项的索引路径。
+    /// - Note: 该属性是 `IndexPath` 对象数组，每个索引路径对应一个已选中项。
+    /// 没有选中项时返回空数组。
     public var indexPathsForSelectedItems: [IndexPath] {
         return Array(selectedIndexPaths).sorted()
     }
 
-    /// A Boolean value that determines whether scrolling is disabled in a particular direction.
-    /// - Note: If this property is `false`, scrolling is permitted in both horizontal and vertical directions.
-    /// If this property is `true` and the user begins dragging in one general direction (horizontally or vertically), the scroll view disables scrolling in the other direction.
-    /// If the drag direction is diagonal, then scrolling will not be locked and the user can drag in any direction until the drag completes.
-    /// The default value is `false`
+    /// 决定是否将滚动锁定在某一个方向的布尔值。
+    /// - Note: 该属性为 `false` 时，允许水平和垂直双向滚动。
+    /// 该属性为 `true` 且用户主要沿水平或垂直方向开始拖动时，滚动视图会禁用另一方向的滚动。
+    /// 如果拖动方向是对角线，则不会锁定方向，用户可以在拖动结束前沿任意方向移动。
+    /// 默认值为 `false`。
     public var isDirectionalLockEnabled = false {
         didSet {
             tableView.isDirectionalLockEnabled = isDirectionalLockEnabled
         }
     }
 
-    /// A Boolean value that controls whether the scroll view bounces past the edge of content and back again.
-    /// - Note: If the value of this property is `true`, the scroll view bounces when it encounters a boundary of the content.
-    /// Bouncing visually indicates that scrolling has reached an edge of the content.
-    /// If the value is `false`, scrolling stops immediately at the content boundary without bouncing.
-    /// The default value is `true`.
+    /// 控制滚动视图越过内容边缘后是否回弹的布尔值。
+    /// - Note: 该属性为 `true` 时，滚动视图到达内容边界后会回弹。
+    /// 回弹效果用于直观提示用户已经滚动到内容边缘。
+    /// 该属性为 `false` 时，滚动会在内容边界立即停止，不产生回弹。
+    /// 默认值为 `true`。
     ///
     /// - SeeAlso: `alwaysBounceHorizontal`, `alwaysBounceVertical`
     public var bounces: Bool {
@@ -203,9 +202,9 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A Boolean value that determines whether bouncing always occurs when vertical scrolling reaches the end of the content.
-    /// - Note: If this property is set to true and `bounces` is `true`, vertical dragging is allowed even if the content is smaller than the bounds of the scroll view.
-    /// The default value is `false`.
+    /// 决定垂直方向是否始终允许回弹的布尔值。
+    /// - Note: 如果该属性和 `bounces` 都为 `true`，即使内容高度小于滚动视图边界，也允许垂直拖动。
+    /// 默认值为 `false`。
     ///
     /// - SeeAlso: `alwaysBounceHorizontal`
     public var alwaysBounceVertical: Bool {
@@ -217,9 +216,9 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A Boolean value that determines whether bouncing always occurs when horizontal scrolling reaches the end of the content view.
-    /// - Note: If this property is set to `true` and `bounces` is `true`, horizontal dragging is allowed even if the content is smaller than the bounds of the scroll view.
-    /// The default value is `false`.
+    /// 决定水平方向是否始终允许回弹的布尔值。
+    /// - Note: 如果该属性和 `bounces` 都为 `true`，即使内容宽度小于滚动视图边界，也允许水平拖动。
+    /// 默认值为 `false`。
     ///
     /// - SeeAlso: `alwaysBounceVertical`
     public var alwaysBounceHorizontal: Bool {
@@ -231,22 +230,22 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A Boolean value that determines wheather the row header always sticks to the top.
-    /// - Note: `bounces` has to be `true` and there has to be at least one `frozenRow`.
-    /// The default value is `false`.
+    /// 决定冻结行表头是否始终保持吸附的布尔值。
+    /// - Note: `bounces` 必须为 `true`，并且至少存在一个 `frozenRow`。
+    /// 默认值为 `false`。
     ///
     /// - SeeAlso: `stickyColumnHeader`
     public var stickyRowHeader: Bool = false
-    /// A Boolean value that determines wheather the column header always sticks to the top.
-    /// - Note: `bounces` has to be `true` and there has to be at least one `frozenColumn`.
-    /// The default value is `false`.
+    /// 决定冻结列表头是否始终保持吸附的布尔值。
+    /// - Note: `bounces` 必须为 `true`，并且至少存在一个 `frozenColumn`。
+    /// 默认值为 `false`。
     ///
     /// - SeeAlso: `stickyRowHeader`
     public var stickyColumnHeader: Bool = false
 
-    /// A Boolean value that determines whether paging is enabled for the scroll view.
-    /// - Note: If the value of this property is `true`, the scroll view stops on multiples of the scroll view’s bounds when the user scrolls.
-    /// The default value is false.
+    /// 决定是否启用分页滚动的布尔值。
+    /// - Note: 该属性为 `true` 时，用户滚动后，滚动视图会停在其边界尺寸的整数倍位置。
+    /// 默认值为 `false`。
     public var isPagingEnabled: Bool {
         get {
             return tableView.isPagingEnabled
@@ -256,10 +255,10 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A Boolean value that determines whether scrolling is enabled.
-    /// - Note: If the value of this property is `true`, scrolling is enabled, and if it is `false`, scrolling is disabled. The default is `true`.
+    /// 决定是否允许滚动的布尔值。
+    /// - Note: 该属性为 `true` 时允许滚动，为 `false` 时禁用滚动。默认值为 `true`。
     ///
-    /// When scrolling is disabled, the scroll view does not accept touch events; it forwards them up the responder chain.
+    /// 禁用滚动后，滚动视图不会接收触摸事件，而是将事件沿响应链向上传递。
     public var isScrollEnabled: Bool {
         get {
             return tableView.isScrollEnabled
@@ -270,8 +269,8 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// The style of the scroll indicators.
-    /// - Note: The default style is `default`. See `UIScrollViewIndicatorStyle` for descriptions of these constants.
+    /// 滚动指示器的样式。
+    /// - Note: 默认样式为 `default`。各常量的说明请参阅 `UIScrollViewIndicatorStyle`。
     public var indicatorStyle: UIScrollView.IndicatorStyle {
         get {
             return overlayView.indicatorStyle
@@ -281,8 +280,8 @@ public class SpreadsheetView: UIView {
         }
     }
 
-    /// A floating-point value that determines the rate of deceleration after the user lifts their finger.
-    /// - Note: Your application can use the `UIScrollViewDecelerationRateNormal` and UIScrollViewDecelerationRateFast` constants as reference points for reasonable deceleration rates.
+    /// 决定用户抬起手指后减速速率的浮点值。
+    /// - Note: 可使用 `UIScrollViewDecelerationRateNormal` 和 `UIScrollViewDecelerationRateFast` 常量作为合理减速速率的参考。
     public var decelerationRate: CGFloat {
         get {
             return tableView.decelerationRate.rawValue
